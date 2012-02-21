@@ -4,6 +4,7 @@ require 'bundler'
 Bundler.setup :default, :test
 Bundler.require :default, :test
 
+$:.push(File.expand_path(File.dirname(__FILE__)))
 require './lib/mongoid-pagination'
 
 Mongoid.database = Mongo::Connection.new.db('mongoid-pagination_test')
