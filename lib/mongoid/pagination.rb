@@ -1,3 +1,5 @@
+require 'active_support/core_ext'
+
 module Mongoid
   module Pagination
     extend ActiveSupport::Concern
@@ -16,7 +18,6 @@ module Mongoid
 
         limit = (opts[:limit] || 25).to_i
         page  = (opts[:page]  || 1).to_i
-        offset = (opts[:offset]).to_i
 
         offset = (opts[:offset] || if page > 1
                                      (page - 1) * limit
