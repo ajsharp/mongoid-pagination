@@ -12,16 +12,18 @@ module Mongoid
       #
       # @return [Mongoid::Criteria]
       def paginate(opts = {})
-        return criteria if opts[:limit].nil? and opts[:page].nil?
+        return criteria if opts[:limit].nil? and opts[:page].nil? and opts[:offset].nil?
 
         limit = (opts[:limit] || 25).to_i
         page  = (opts[:page]  || 1).to_i
+        offset = (opts[:offset]).to_i
 
-        if page > 1
-          offset = (page - 1) * limit
-        else
-          offset = 0
-        end
+        offset = (opts[:offset] || if page > 1
+                                     (page - 1) * limit
+                                   else
+                                     0
+                                   end
+        ).to_i
 
         per_page(limit).offset(offset)
       end

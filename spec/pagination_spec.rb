@@ -20,6 +20,10 @@ describe Mongoid::Pagination do
           subject.options[:skip].should be_nil
         end
 
+        it "does not set the offset param by default" do
+          subject.options[:offset].should be_nil
+        end
+
         it "defaults the limit param to 25" do
           subject.options[:limit].should be_nil
         end
@@ -44,6 +48,26 @@ describe Mongoid::Pagination do
         end
       end
 
+      describe "when passed an offset param but no limit" do
+        subject { Person.paginate(:offset => 10) }
+
+        it "defaults the limit to 25" do
+          subject.options[:limit].should == 25
+        end
+
+        it "sets the offset to 10" do
+          subject.options[:skip].should == 10
+        end
+      end
+
+      describe "when passed an offset param and a page param" do
+        subject { Person.paginate(:offset => 10, :page => 50) }
+
+        it "uses the provided offset and not the calculated offset from page" do
+          subject.options[:skip].should == 10
+        end
+      end
+
       describe "when passed a limit param but no page" do
         subject { Person.paginate(:limit => 100) }
 
@@ -56,16 +80,32 @@ describe Mongoid::Pagination do
         end
       end
 
-      it "sets the skip param to 0 if passed 0" do
-        Person.paginate(:page => 0).options[:skip].should == 0
+      context "page param" do
+        it "sets the skip param to 0 if passed 0" do
+          Person.paginate(:page => 0).options[:skip].should == 0
+        end
+
+        it "sets the skip param to 0 if passed a string of 0" do
+          Person.paginate(:page => '0').options[:skip].should == 0
+        end
+
+        it "sets the skip param to 0 if the passed a string of 1" do
+          Person.paginate(:page => '1').options[:skip].should == 0
+        end
       end
 
-      it "sets the skip param to 0 if passed a string of 0" do
-        Person.paginate(:page => '0').options[:skip].should == 0
-      end
+      context "offset param" do
+        it "sets the skip param to 0 if passed 0" do
+          Person.paginate(:offset => 0).options[:skip].should == 0
+        end
 
-      it "sets the skip param to 0 if the passed a string of 1" do
-        Person.paginate(:page => '1').options[:skip].should == 0
+        it "sets the skip param to 0 if passed a string of 0" do
+          Person.paginate(:offset => '0').options[:skip].should == 0
+        end
+
+        it "sets the skip param to 1 if the passed a string of 1" do
+          Person.paginate(:offset => '1').options[:skip].should == 1
+        end
       end
 
       it "limits when passed a string param" do
@@ -78,12 +118,24 @@ describe Mongoid::Pagination do
     end
 
     context "results" do
-      it "paginates correctly on the first page" do
-        Person.paginate(:page => 1, :limit => 2).to_a.should == [one, two]
+      context "page param" do
+        it "paginates correctly on the first page" do
+          Person.paginate(:page => 1, :limit => 2).to_a.should == [one, two]
+        end
+
+        it "paginates correctly on the second page" do
+          Person.paginate(:page => 2, :limit => 2).to_a.should == [three, four]
+        end
       end
 
-      it "paginates correctly on the second page" do
-        Person.paginate(:page => 2, :limit => 2).to_a.should == [three, four]
+      context "offset param" do
+        it "paginates correctly on the first page" do
+          Person.paginate(:offset => 0, :limit => 2).to_a.should == [one, two]
+        end
+
+        it "paginates correctly on the second page" do
+          Person.paginate(:page => 2, :limit => 2).to_a.should == [three, four]
+        end
       end
     end
 
