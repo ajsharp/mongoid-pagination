@@ -61,14 +61,14 @@ describe Mongoid::Pagination do
       end
 
       describe "when passed an offset param and a page param" do
-        subject { Person.paginate(:offset => 10, :page => 50) }
+        subject { Person.paginate(:offset => 0, :page => 2) }
 
-        it "uses the provided offset and not the calculated offset from page" do
-          subject.options[:skip].should == 10
+        it "uses the calculated offset from page instead of the offset param" do
+          subject.options[:skip].should == 25
         end
       end
 
-      describe "when passed a limit param but no page" do
+      describe "when passed a limit param but no page or offset" do
         subject { Person.paginate(:limit => 100) }
 
         it "defaults the page to 0" do

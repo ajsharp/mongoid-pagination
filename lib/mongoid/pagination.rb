@@ -19,12 +19,15 @@ module Mongoid
         limit = (opts[:limit] || 25).to_i
         page  = (opts[:page]  || 1).to_i
 
-        offset = (opts[:offset] || if page > 1
-                                     (page - 1) * limit
-                                   else
-                                     0
-                                   end
-        ).to_i
+        if opts[:page].blank?
+          offset = (opts[:offset] || 0)
+        else
+          if page > 1
+            offset = (page - 1) * limit
+          else
+            offset = 0
+          end
+        end
 
         per_page(limit).offset(offset)
       end
