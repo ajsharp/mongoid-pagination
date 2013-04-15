@@ -44,7 +44,12 @@ module Mongoid
 
       private
       def arg_blank?(arg)
-        arg == "" || arg.nil?
+        case arg
+        when String
+          arg !~ /[^[:space:]]/
+        else
+          arg.nil? || arg == false
+        end
       end
     end
   end
