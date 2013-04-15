@@ -1,9 +1,10 @@
 module Mongoid
   module Pagination
-    extend ActiveSupport::Concern
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
     module ClassMethods
-
       # Paginate the results
       #
       # @param [Hash] opts
