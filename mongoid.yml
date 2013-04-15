@@ -1,0 +1,6 @@
+test:
+  sessions:
+    default:
+      database: mongoid-pagination-test
+      hosts:
+        - localhost:27017

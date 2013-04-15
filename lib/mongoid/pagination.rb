@@ -1,11 +1,10 @@
-require 'active_support/core_ext'
-
 module Mongoid
   module Pagination
-    extend ActiveSupport::Concern
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
     module ClassMethods
-
       # Paginate the results
       #
       # @param [Hash] opts
@@ -14,12 +13,16 @@ module Mongoid
       #
       # @return [Mongoid::Criteria]
       def paginate(opts = {})
-        return criteria if opts[:limit].blank? and opts[:page].blank? and opts[:offset].blank?
+        empty_args = arg_blank?(opts[:limit]) &&
+          arg_blank?(opts[:page]) &&
+          arg_blank?(opts[:offset])
+
+        return criteria if empty_args
 
         limit = (opts[:limit] || 25).to_i
         page  = (opts[:page]  || 1).to_i
 
-        if opts[:page].blank?
+        if arg_blank?(opts[:page])
           offset = (opts[:offset] || 0)
         else
           if page > 1
@@ -38,6 +41,16 @@ module Mongoid
       # @return [Mongoid::Criteria]
       def per_page(page_limit = 25)
         limit(page_limit.to_i)
+      end
+
+      private
+      def arg_blank?(arg)
+        case arg
+        when String
+          arg !~ /[^[:space:]]/
+        else
+          arg.nil? || arg == false
+        end
       end
     end
   end

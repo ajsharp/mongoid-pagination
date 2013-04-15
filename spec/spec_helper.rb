@@ -7,10 +7,10 @@ Bundler.require :default, :test
 $:.push(File.expand_path(File.dirname(__FILE__)))
 require './lib/mongoid-pagination'
 
-Mongoid.database = Mongo::Connection.new.db('mongoid-pagination_test')
+Mongoid.load!("./mongoid.yml", :test)
 
 RSpec.configure do |c|
   c.before(:each) do
-    Mongoid.database.collections.each { |c| c.drop unless c.name =~ /system\.indexes$/}
+    Mongoid.default_session.collections.each { |c| c.drop unless c.name =~ /system\.indexes$/}
   end
 end
