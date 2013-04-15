@@ -20,5 +20,4 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'mongoid'
-  s.add_dependency 'activesupport'
 end
