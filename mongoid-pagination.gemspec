@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'mongoid'
   s.add_dependency 'activesupport'
-  s.add_dependency 'mongo'
+  s.add_development_dependency 'pry'
 end
