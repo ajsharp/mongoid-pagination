@@ -5,6 +5,7 @@ module Mongoid
     extend ActiveSupport::Concern
 
     module ClassMethods
+      DEFAULT_PAGE_LIMIT = 25
 
       # Paginate the results
       #
@@ -16,7 +17,7 @@ module Mongoid
       def paginate(opts = {})
         return criteria if opts[:limit].blank? and opts[:page].blank? and opts[:offset].blank?
 
-        limit = (opts[:limit] || 25).to_i
+        limit = (opts[:limit] || DEFAULT_PAGE_LIMIT).to_i
         page  = (opts[:page]  || 1).to_i
 
         if opts[:page].blank?
@@ -36,8 +37,16 @@ module Mongoid
       #
       # @param [Integer] page_limit the max number of results to return
       # @return [Mongoid::Criteria]
-      def per_page(page_limit = 25)
+      def per_page(page_limit = DEFAULT_PAGE_LIMIT)
         limit(page_limit.to_i)
+      end
+
+      # Calculate total number of pages
+      #
+      # @return [Integer] total documents in collection divided by limit
+      def total_pages
+        limit = criteria.options[:limit] || DEFAULT_PAGE_LIMIT
+        (criteria.count / limit) + (criteria.count % limit)
       end
     end
   end

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pry'
 
 describe Mongoid::Pagination do
   class Person
@@ -159,6 +160,30 @@ describe Mongoid::Pagination do
 
     it "defaults to 25" do
       Person.per_page.options[:limit].should == 25
+    end
+  end
+
+  describe ".total_pages" do
+    subject { Person.paginate(:limit => 2) }
+
+    context "an even number of records" do
+      before do
+        8.times { Person.create! }
+      end
+
+      it "calculates the total number of pages" do
+        expect(subject.total_pages).to eq 4
+      end
+    end
+
+    context "an odd number of records" do
+      before do
+        7.times { Person.create! }
+      end
+
+      it "calculates the total number of pages" do
+        expect(subject.total_pages).to eq 4
+      end
     end
   end
 end
